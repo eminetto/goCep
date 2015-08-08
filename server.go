@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"fmt"
 	curl "github.com/andelf/go-curl"
 	"github.com/go-martini/martini"
@@ -12,10 +13,12 @@ import (
 
 func main() {
 	m := martini.Classic()
+
 	m.Get("/", func() string {
 		return "Hello world!"
 	})
-	m.Get("/cep/:id", func(params martini.Params) string {
+	m.Get("/cep/:id", func(params martini.Params, writer http.ResponseWriter) string {
+		writer.Header().Set("Content-Type", "application/json")
 		return getCep(params["id"])
 	})
 
