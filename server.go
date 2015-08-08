@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
 	curl "github.com/andelf/go-curl"
 	"github.com/go-martini/martini"
 	"github.com/ryanuber/go-filecache"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"time"
 )
