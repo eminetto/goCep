@@ -9,7 +9,10 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"errors"
 )
+
+const cacheTime = 500;
 
 func main() {
 	m := martini.Classic()
@@ -54,7 +57,11 @@ func getCep(id string) string {
 }
 
 func getFromCache(id string) string {
-	fc := filecache.New("/tmp/cep"+id, 500*time.Second, nil)
+	updater := func(path string) error {
+		return errors.New("expired")
+	}
+
+	fc := filecache.New("/tmp/cep"+id, cacheTime*time.Second, updater)
 
 	fh, err := fc.Get()
 	if err != nil {
@@ -71,6 +78,7 @@ func getFromCache(id string) string {
 
 func saveOnCache(id string, content string) string {
 	updater := func(path string) error {
+		println("updater")
 		f, err := os.Create(path)
 		if err != nil {
 			return err
@@ -80,7 +88,7 @@ func saveOnCache(id string, content string) string {
 		return err
 	}
 
-	fc := filecache.New("/tmp/cep"+id, 500*time.Second, updater)
+	fc := filecache.New("/tmp/cep"+id, cacheTime*time.Second, updater)
 
 	_, err := fc.Get()
 	if err != nil {
