@@ -15,6 +15,11 @@ Além de ter o Go instalado no sistema operacional é necessário executar:
 
 O binário chamado goCep será criado. Basta executá-lo e ele ficará ouvindo na porta 3000 por novas requisições
 
+# Testando
+Para rodar os tests, você pode executar:
+
+	go test
+
 # Uso
 
 Basta acessar a URL como no exemplo abaixo
