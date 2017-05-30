@@ -46,9 +46,9 @@ func Test_Get_Cep(t *testing.T) {
 
 func Test_Cache(t *testing.T) {
 	id := "89201405"
-	getCep(id) // Add to /tmp/cep89201405
+	getCep(id) // Add to temporary_directory_path/cep89201405
 
-	if _, err := os.Stat("/tmp/cep" + id); err != nil {
+	if _, err := os.Stat(os.TempDir()+"/cep"+id); err != nil {
 		t.Errorf("Cache doesn't work - %v", err)
 	}
 }
