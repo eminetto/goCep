@@ -12,6 +12,7 @@ import (
 	"errors"
 )
 
+const serverPort = "3000";
 const cacheTime = 500;
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 		writer.Write([]byte(getCep(vars["id"])))
 	})
 
-	http.ListenAndServe(":3000", router)
+	http.ListenAndServe(":"+serverPort, router)
 }
 
 func getCep(id string) string {
