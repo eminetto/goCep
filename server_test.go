@@ -46,7 +46,10 @@ func Test_Get_Cep(t *testing.T) {
 
 func Test_Get_Cache_Filename(t *testing.T) {
   id := "89201405"
+  id_with_dash := "89201-405"
+
   expect(t, getCacheFilename(id), os.TempDir()+"/cep"+id)
+  expect(t, getCacheFilename(id_with_dash), os.TempDir()+"/cep"+id)
 }
 
 func Test_Cache(t *testing.T) {

@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 	"errors"
+	"strings"
 )
 
 const serverPort = "3000";
@@ -101,5 +102,5 @@ func saveOnCache(id string, content string) string {
 }
 
 func getCacheFilename(id string) string {
-  return os.TempDir()+"/cep"+id;
+  return os.TempDir()+"/cep"+strings.Replace(id, "-", "", -1);
 }
