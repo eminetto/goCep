@@ -63,7 +63,7 @@ func getFromCache(id string) string {
 		return errors.New("expired")
 	}
 
-	fc := filecache.New(os.TempDir()+"/cep"+id, cacheTime*time.Second, updater)
+	fc := filecache.New(getCacheFilename(id), cacheTime*time.Second, updater)
 
 	fh, err := fc.Get()
 	if err != nil {
@@ -90,7 +90,7 @@ func saveOnCache(id string, content string) string {
 		return err
 	}
 
-	fc := filecache.New(os.TempDir()+"/cep"+id, cacheTime*time.Second, updater)
+	fc := filecache.New(getCacheFilename(id), cacheTime*time.Second, updater)
 
 	_, err := fc.Get()
 	if err != nil {
@@ -98,4 +98,8 @@ func saveOnCache(id string, content string) string {
 	}
 
 	return content
+}
+
+func getCacheFilename(id string) string {
+  return os.TempDir()+"/cep"+id;
 }
