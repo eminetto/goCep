@@ -44,11 +44,19 @@ func Test_Get_Cep(t *testing.T) {
 	expect(t, "", res.Gia)
 }
 
+func Test_Get_Cache_Filename(t *testing.T) {
+  id := "89201405"
+  id_with_dash := "89201-405"
+
+  expect(t, getCacheFilename(id), os.TempDir()+"/cep"+id)
+  expect(t, getCacheFilename(id_with_dash), os.TempDir()+"/cep"+id)
+}
+
 func Test_Cache(t *testing.T) {
 	id := "89201405"
 	getCep(id) // Add to temporary_directory_path/cep89201405
 
-	if _, err := os.Stat(os.TempDir()+"/cep"+id); err != nil {
+	if _, err := os.Stat(getCacheFilename(id)); err != nil {
 		t.Errorf("Cache doesn't work - %v", err)
 	}
 }
