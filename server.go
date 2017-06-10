@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	curl "github.com/andelf/go-curl"
-	"github.com/go-martini/martini"
+	"github.com/gorilla/mux"
 	"github.com/ryanuber/go-filecache"
 	"io/ioutil"
 	"net/http"
@@ -12,20 +12,22 @@ import (
 	"errors"
 )
 
+const serverPort = "3000";
 const cacheTime = 500;
 
 func main() {
-	m := martini.Classic()
+	router := mux.NewRouter()
 
-	m.Get("/", func() string {
-		return "Hello world!"
+	router.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		writer.Write([]byte("Hello world!"))
 	})
-	m.Get("/cep/:id", func(params martini.Params, writer http.ResponseWriter) string {
+	router.HandleFunc("/cep/{id}", func(writer http.ResponseWriter, request *http.Request) {
+		vars := mux.Vars(request)
 		writer.Header().Set("Content-Type", "application/json")
-		return getCep(params["id"])
+		writer.Write([]byte(getCep(vars["id"])))
 	})
 
-	m.Run()
+	http.ListenAndServe(":"+serverPort, router)
 }
 
 func getCep(id string) string {
