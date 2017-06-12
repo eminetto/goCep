@@ -25,11 +25,27 @@ func expect(t *testing.T, a interface{}, b interface{}) {
 	}
 }
 
+func Remove_Cache_File(id string) {
+	os.Remove(getCacheFilename(id))
+}
+
+func Test_Get_Cache_Filename(t *testing.T) {
+  id := "89201405"
+  id_with_dash := "89201-405"
+
+  expect(t, getCacheFilename(id), os.TempDir()+"/cep"+id)
+  expect(t, getCacheFilename(id_with_dash), os.TempDir()+"/cep"+id)
+}
+
 func Test_Get_Cep(t *testing.T) {
-	wrongCep := getCep("0000000")
+	id := "0000000"
+	wrongCep := getCep(id)
 	expect(t, "<h2>Bad Request (400)</h2>", wrongCep)
 
-	cepJson := getCep("60170150")
+	Remove_Cache_File(id)
+
+	id = "60170150"
+	cepJson := getCep(id)
 	res := Cep{}
 	json.Unmarshal([]byte(cepJson), &res)
 
@@ -42,14 +58,8 @@ func Test_Get_Cep(t *testing.T) {
 	expect(t, "", res.Unidade)
 	expect(t, "2304400", res.Ibge)
 	expect(t, "", res.Gia)
-}
 
-func Test_Get_Cache_Filename(t *testing.T) {
-  id := "89201405"
-  id_with_dash := "89201-405"
-
-  expect(t, getCacheFilename(id), os.TempDir()+"/cep"+id)
-  expect(t, getCacheFilename(id_with_dash), os.TempDir()+"/cep"+id)
+	Remove_Cache_File(id)
 }
 
 func Test_Cache(t *testing.T) {
@@ -59,4 +69,6 @@ func Test_Cache(t *testing.T) {
 	if _, err := os.Stat(getCacheFilename(id)); err != nil {
 		t.Errorf("Cache doesn't work - %v", err)
 	}
+
+	Remove_Cache_File(id)
 }
