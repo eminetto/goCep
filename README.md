@@ -8,9 +8,8 @@ Projeto em Golang para buscar dados do CEP e armazenar em cache
 Além de ter o Go instalado no sistema operacional é necessário executar:
 
 	export GOPATH=/path/goCep
-	go get github.com/go-martini/martini
-	go get github.com/andelf/go-curl
-	go get github.com/ryanuber/go-filecache
+	go get -u github.com/golang/dep/cmd/dep
+	dep ensure
 	go build
 
 
