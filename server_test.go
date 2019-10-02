@@ -1,74 +1,60 @@
 package main
 
 import (
-	"reflect"
-	"testing"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"os"
+	"testing"
 )
 
-type Cep struct {
-	Cep string `json:"cep"`
-	Logradouro string `json:"logradouro"`
-	Complemento string `json:"complemento"`
-	Bairro string `json:"bairro"`
-	Localidade string `json:"localidade"`
-	Uf string `json:"uf"`
-	Unidade string `json:"unidade"`
-	Ibge string `json:"ibge"`
-	Gia string `json:"gia"`
+
+
+func removeCacheFile(t *testing.T, id string) {
+	assert.Nil(t, os.Remove(getCacheFilename(id)))
 }
 
-func expect(t *testing.T, a interface{}, b interface{}) {
-	if a != b {
-		t.Errorf("Expected %v (type %v) - Got %v (type %v)", b, reflect.TypeOf(b), a, reflect.TypeOf(a))
-	}
-}
-
-func Remove_Cache_File(id string) {
-	os.Remove(getCacheFilename(id))
-}
-
-func Test_Get_Cache_Filename(t *testing.T) {
+func Test_getCacheFilename(t *testing.T) {
   id := "89201405"
-  id_with_dash := "89201-405"
+  idWithDash := "89201-405"
 
-  expect(t, getCacheFilename(id), os.TempDir()+"/cep"+id)
-  expect(t, getCacheFilename(id_with_dash), os.TempDir()+"/cep"+id)
+  assert.Equal(t, getCacheFilename(id), os.TempDir()+"/cep"+id)
+  assert.Equal(t, getCacheFilename(idWithDash), os.TempDir()+"/cep"+id)
 }
 
-func Test_Get_Cep(t *testing.T) {
-	id := "0000000"
-	wrongCep := getCep(id)
-	expect(t, "<h2>Bad Request (400)</h2>", wrongCep)
+func Test_getCep(t *testing.T) {
+	t.Run("invalid cep", func(t *testing.T) {
+		id := "0000000"
+		wrongCep, err := getCep(id)
+		assert.Equal(t, "", wrongCep)
+		assert.Error(t, err)
+	})
+	t.Run("valid cep", func(t *testing.T) {
 
-	Remove_Cache_File(id)
+		id := "60170150"
+		cepJson, err := getCep(id)
+		assert.Nil(t, err)
+		res := Cep{}
+		assert.Nil(t, json.Unmarshal([]byte(cepJson), &res))
 
-	id = "60170150"
-	cepJson := getCep(id)
-	res := Cep{}
-	json.Unmarshal([]byte(cepJson), &res)
+		assert.Equal(t, "60170-150", res.Cep)
+		assert.Equal(t, "Rua Vicente Leite", res.Logradouro)
+		assert.Equal(t, "até 879/880", res.Complemento)
+		assert.Equal(t, "Meireles", res.Bairro)
+		assert.Equal(t, "Fortaleza", res.Localidade)
+		assert.Equal(t, "CE", res.Uf)
+		assert.Equal(t, "", res.Unidade)
+		assert.Equal(t, "2304400", res.Ibge)
+		assert.Equal(t, "", res.Gia)
 
-	expect(t, "60170-150", res.Cep)
-	expect(t, "Rua Vicente Leite", res.Logradouro)
-	expect(t, "até 879/880", res.Complemento)
-	expect(t, "Meireles", res.Bairro)
-	expect(t, "Fortaleza", res.Localidade)
-	expect(t, "CE", res.Uf)
-	expect(t, "", res.Unidade)
-	expect(t, "2304400", res.Ibge)
-	expect(t, "", res.Gia)
-
-	Remove_Cache_File(id)
+		removeCacheFile(t, id)
+	})
 }
 
 func Test_Cache(t *testing.T) {
 	id := "89201405"
-	getCep(id) // Add to temporary_directory_path/cep89201405
-
-	if _, err := os.Stat(getCacheFilename(id)); err != nil {
-		t.Errorf("Cache doesn't work - %v", err)
-	}
-
-	Remove_Cache_File(id)
+	_, err := getCep(id) // Add to temporary_directory_path/cep89201405
+	assert.Nil(t, err)
+	_, err = os.Stat(getCacheFilename(id))
+	assert.Nil(t, err)
+	removeCacheFile(t,id)
 }

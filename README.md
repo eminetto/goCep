@@ -7,18 +7,7 @@ Projeto em Golang para buscar dados do CEP e armazenar em cache
 
 Além de ter o Go instalado no sistema operacional é necessário executar:
 
-	export GOPATH=/path/goCep
-	go get -u github.com/golang/dep/cmd/dep
-	dep ensure
 	go build
-
-
-Se você está compilando este projeto no Ubuntu, ou no Debian, verifique se você possuí 
-uma das bibliotecas abaixo instaladas:
-
-* libcurl4-gnutls-dev
-* libcurl4-openssl-dev
-
 
 # Executar
 
@@ -29,7 +18,6 @@ O binário chamado goCep será criado. Basta executá-lo e ele ficará ouvindo n
 Para rodar os tests, você pode executar:
 
 	go test
-
 
 # Uso
 
